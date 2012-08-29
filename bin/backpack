@@ -2,6 +2,7 @@
 (function() {
     if (process.argv.length < 6) {
         console.log("Usage: backpack <path> <listen host> <listen port> <redis port> <redis host>");
+        return;
     }
 
     var redis    = require("redis"),
