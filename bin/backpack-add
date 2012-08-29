@@ -7,15 +7,28 @@
 
     var args        = process.argv,
         redis       = require("redis").createClient(args[4], args[3]),
+        child       = require("child_process"),
         FileManager = require("../index").FileManager;
-        manager     = new FileManager(args[2], redis);
+        manager     = new FileManager(args[2], redis),
+        ddArgs      = ["if=/dev/zero", "bs=1024", "count=4000000"];
 
     manager.addStorageFile(function(error, id) {
         if (error) {
             console.log(error);
         }
 
-        console.log("Successfully added file #" + id);
-        redis.end();
+        console.log("Registered file #" + id + ", filling file (this could take some time)");
+
+        ddArgs.push("of=" + args[2] + "/data_" + id);
+        child.spawn("dd", ddArgs).on("exit", function(code) {
+            if (code != 0) {
+                console.log("error");
+                return;
+            }
+
+            console.log("Successfully filled file #" + id);
+            redis.end();
+        });
+
     });
 })();
