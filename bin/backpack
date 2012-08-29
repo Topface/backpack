@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 (function() {
-    if (process.argv.length < 6) {
+    if (process.argv.length < 7) {
         console.log("Usage: backpack <path> <listen host> <listen port> <redis host> <redis port>");
         return;
     }
 
-    var redis    = require("redis"),
-        Server   = require("../index").Server;
-        args     = process.argv,
-        backpack = new Server(args[2], redis.createClient(args[6], args[5]));
+    var args     = process.argv,
+        redis    = require("redis").createClient(args[6], args[5]),
+        Server   = require("../index").Server,
+        backpack = new Server(args[2], redis);
 
     backpack.listen(args[4], args[3]);
+    console.log("listening at " + args[3] + ":" + args[4]);
 })();
