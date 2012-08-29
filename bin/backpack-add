@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 5) {
+        console.log("Usage: backpack-add <path> <redis host> <redis port>");
+        return;
+    }
+
+    var args        = process.argv,
+        redis       = require("redis").createClient(args[4], args[3]),
+        FileManager = require("../index").FileManager;
+        manager     = new FileManager(args[2], redis);
+
+    manager.addStorageFile(function(error, id) {
+        if (error) {
+            console.log(error);
+        }
+
+        console.log("Successfully added file #" + id);
+        redis.end();
+    });
+})();
