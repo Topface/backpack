@@ -1,4 +1,4 @@
 (function(module) {
-    module.exports.Server = require("./lib/Server");
-    module.exports.File   = require("./lib/File");
+    module.exports.Server      = require("./lib/Server");
+    module.exports.FileManager = require("./lib/FileManager");
 })(module);
