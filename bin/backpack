@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 (function() {
     if (process.argv.length < 6) {
-        console.log("Usage: backpack <path> <listen host> <listen port> <redis port> <redis host>");
+        console.log("Usage: backpack <path> <listen host> <listen port> <redis host> <redis port>");
         return;
     }
 
