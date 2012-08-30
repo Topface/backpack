@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 3) {
+        console.log("Usage: backpack-dump-log <data file path>");
+        return;
+    }
+
+    var args        = process.argv,
+        path        = require("path"),
+        FileMetaLog = require("../index").FileMetaLog,
+        log         = new FileMetaLog(args[2]);
+
+    log.getContents(function(error, contents) {
+        if (error) {
+            console.log(error);
+        }
+
+        contents.forEach(function(file) {
+            console.log(file.join(" "));
+        });
+    });
+})();
