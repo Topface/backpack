@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 6) {
+        console.log("Usage: backpack-dump-log <host> <port> </path/to/file> <upload path>");
+        return;
+    }
+
+    var args = process.argv,
+        fs   = require("fs"),
+        http = require("http"),
+        size = fs.statSync(args[4]).size,
+        request,
+        readStream;
+
+    request = http.request({
+        host    : args[2],
+        port    : args[3],
+        method  : "PUT",
+        path    : "/" + args[5],
+        headers : {
+            "Content-Length": size
+        }
+    });
+
+    readStream = fs.createReadStream(args[4]);
+    readStream.pipe(request);
+    readStream.on("end", function() {
+        var url = "http://" + args[2] + ":" + args[3] + "/" + args[5]
+        console.log("File successfully uploaded: " + url);
+    });
+})();
