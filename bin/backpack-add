@@ -6,7 +6,7 @@
     }
 
     var args        = process.argv,
-        redis       = require("redis").createClient(args[4], args[3]),
+        redis       = require("redis").createClient(args[4], args[3], { return_buffers: true }),
         FileManager = require("../index").FileManager;
         manager     = new FileManager(args[2], redis);
 

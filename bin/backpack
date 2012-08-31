@@ -6,7 +6,7 @@
     }
 
     var args     = process.argv,
-        redis    = require("redis").createClient(args[6], args[5]),
+        redis    = require("redis").createClient(args[6], args[5], { return_buffers: true }),
         Server   = require("../index").Server,
         backpack = new Server(args[2], redis);
 
