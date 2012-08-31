@@ -7,6 +7,12 @@
     "redis": "~0.7.2"
   },
   "devDependencies": {},
+  "bin": {
+    "backpack": "./bin/backpack",
+    "backpack-add": "./bin/backpack-add",
+    "backpack-dump-log": "./bin/backpack-dump-log",
+    "backpack-upload": "./bin/backpack-upload"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
