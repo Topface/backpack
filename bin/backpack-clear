@@ -1,0 +1,92 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 6) {
+        console.log("Usage: backpack <path> <data file number> <redis host> <redis port>");
+        return;
+    }
+
+    var args        = process.argv,
+        redis       = require("redis").createClient(args[5], args[4], { return_buffers: true }),
+        FileManager = require("../index").FileManager,
+        manager     = new FileManager(args[2], redis);
+
+    manager.isReadOnlyFile(args[3], function(error, readOnly) {
+        if (error) {
+            console.log(error);
+            redis.end();
+            return;
+        }
+
+        if (!readOnly) {
+            console.log("File #" + args[3] + " is not read only to be cleared!");
+            redis.end();
+            return;
+        }
+
+        manager.getFile(args[3], function(error, file) {
+            if (error) {
+                console.log(error);
+                redis.end();
+                return;
+            }
+
+            file.getMeta().getContents(function(error, contents) {
+                if (error) {
+                    console.log(error);
+                    redis.end();
+                    return;
+                }
+
+                (function process() {
+                    var element = contents.pop(),
+                        key;
+
+                    if (!element) {
+                        redis.end();
+                        console.log("===================");
+                        console.log("Finished, not data and meta file could be deleted");
+                        return;
+                    }
+
+                    key = manager.nodeKeySerializer(element[0]);
+
+                    redis.get(key, function(error, info) {
+                        if (error) {
+                            console.log(error);
+                            redis.end();
+                            return;
+                        }
+
+                        if (!info) {
+                            console.log("Not found info for " + element[0] + ", probably already deleted");
+                            return process();
+                        }
+
+                        info = manager.nodeInfoUnserializer(info);
+
+                        if (info.file != args[3]) {
+                            console.log("Different data file for " + element[0] + " " + info.file + " vs " + args[3] + ", skipping");
+                            return process();
+                        }
+
+                        redis.del(key, function(error, deleted) {
+                            if (error) {
+                                console.log(error);
+                                redis.end();
+                                return;
+                            }
+
+                            if (!deleted) {
+                                console.log("Key was not deleted for " + element[0]);
+                                redis.end();
+                                return;
+                            }
+
+                            process();
+                        });
+                    });
+                })();
+            });
+        });
+    });
+})();
