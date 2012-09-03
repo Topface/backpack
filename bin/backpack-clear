@@ -10,31 +10,28 @@
         FileManager = require("../index").FileManager,
         manager     = new FileManager(args[2], redis);
 
+    function exit(error) {
+        console.log(error);
+        process.exit(1);
+    }
+
     manager.isReadOnlyFile(args[3], function(error, readOnly) {
         if (error) {
-            console.log(error);
-            redis.end();
-            return;
+            return exit(error);
         }
 
         if (!readOnly) {
-            console.log("File #" + args[3] + " is not read only to be cleared!");
-            redis.end();
-            return;
+            return exit("File #" + args[3] + " is not read only to be cleared!");
         }
 
         manager.getFile(args[3], function(error, file) {
             if (error) {
-                console.log(error);
-                redis.end();
-                return;
+                return exit(error);
             }
 
             file.getMeta().getContents(function(error, contents) {
                 if (error) {
-                    console.log(error);
-                    redis.end();
-                    return;
+                    return exit(error);
                 }
 
                 (function process() {
@@ -52,9 +49,7 @@
 
                     redis.get(key, function(error, info) {
                         if (error) {
-                            console.log(error);
-                            redis.end();
-                            return;
+                            return exit(error);
                         }
 
                         if (!info) {
@@ -71,15 +66,11 @@
 
                         redis.del(key, function(error, deleted) {
                             if (error) {
-                                console.log(error);
-                                redis.end();
-                                return;
+                                return exit(error);
                             }
 
                             if (!deleted) {
-                                console.log("Key was not deleted for " + element[0]);
-                                redis.end();
-                                return;
+                                return exit(error);
                             }
 
                             process();
