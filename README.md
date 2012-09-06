@@ -1,6 +1,8 @@
 # backpack
 
 Ultimately fast storage for billions of files with http interface.
+This is not database, this is append-only mostly-reads storage.
+This is good photo storage if you want to build your facebook.
 
 ## How it works
 
