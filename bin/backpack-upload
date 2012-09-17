@@ -24,8 +24,16 @@
 
     readStream = fs.createReadStream(args[4]);
     readStream.pipe(request);
-    readStream.on("end", function() {
-        var url = "http://" + args[2] + ":" + args[3] + "/" + args[5]
-        console.log("File successfully uploaded: " + url);
+
+    request.on("response", function(response) {
+        response.on("end", function() {
+            var url = "http://" + args[2] + ":" + args[3] + "/" + args[5];
+
+            if (response.statusCode != 201) {
+                console.log("Error uploading file: http code " + response.statusCode + " | " + url);
+            } else {
+                console.log("File successfully uploaded: " + url);
+            }
+        });
     });
 })();
