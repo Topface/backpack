@@ -1,6 +1,8 @@
 # backpack
 
 Ultimately fast storage for billions of files with http interface.
+This is not database, this is append-only mostly-reads storage.
+This is good photo storage if you want to build your facebook.
 
 ## How it works
 
@@ -121,5 +123,3 @@ NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-This software also contains:
