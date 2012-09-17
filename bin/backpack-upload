@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 (function() {
     if (process.argv.length < 6) {
-        console.log("Usage: backpack-dump-log <host> <port> </path/to/file> <upload path>");
+        console.log("Usage: backpack-upload <host> <port> </path/to/file> <upload path>");
         return;
     }
 

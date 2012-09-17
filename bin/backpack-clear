@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 (function() {
     if (process.argv.length < 6) {
-        console.log("Usage: backpack <path> <data file number> <redis host> <redis port>");
+        console.log("Usage: backpack-clear <path> <data file number> <redis host> <redis port>");
         return;
     }
 
@@ -35,8 +35,7 @@
                 }
 
                 (function process() {
-                    var element = contents.pop(),
-                        key;
+                    var element = contents.pop();
 
                     if (!element) {
                         redis.end();
@@ -45,35 +44,43 @@
                         return;
                     }
 
-                    key = manager.nodeKeySerializer(element[0]);
-
-                    redis.get(key, function(error, info) {
+                    manager.nodeKeySerializer(element[0], function(error, key) {
                         if (error) {
                             return exit(error);
                         }
 
-                        if (!info) {
-                            console.log("Not found info for " + element[0] + ", probably already deleted");
-                            return process();
-                        }
-
-                        info = manager.nodeInfoUnserializer(info);
-
-                        if (info.file != args[3]) {
-                            console.log("Different data file for " + element[0] + " " + info.file + " vs " + args[3] + ", skipping");
-                            return process();
-                        }
-
-                        redis.del(key, function(error, deleted) {
+                        redis.get(key, function(error, info) {
                             if (error) {
                                 return exit(error);
                             }
 
-                            if (!deleted) {
-                                return exit(error);
+                            if (!info) {
+                                console.log("Not found info for " + element[0] + ", probably already deleted");
+                                return process();
                             }
 
-                            process();
+                            manager.nodeInfoUnserializer(info, function(error, info) {
+                                if (error) {
+                                    return exit(error);
+                                }
+
+                                if (info.file != args[3]) {
+                                    console.log("Different data file for " + element[0] + " " + info.file + " vs " + args[3] + ", skipping");
+                                    return process();
+                                }
+
+                                redis.del(key, function(error, deleted) {
+                                    if (error) {
+                                        return exit(error);
+                                    }
+
+                                    if (!deleted) {
+                                        return exit(error);
+                                    }
+
+                                    process();
+                                });
+                            });
                         });
                     });
                 })();
