@@ -95,6 +95,8 @@ This is what you'll get:
 
 * `./bin/backpack-clear` - Clear storage file to free up some space.
 
+* `./bin/backpack-list` - List data files with their sizes and read-only flags.
+
 ## Authors
 
 * [Ian Babrou](https://github.com/bobrik)
@@ -103,7 +105,7 @@ This is what you'll get:
 
 This software is licensed under the MIT License.
 
-Copyright Fedor Indutny, 2012.
+Copyright Ian Babrou, 2012.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
