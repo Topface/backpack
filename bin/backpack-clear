@@ -40,7 +40,7 @@
                     if (!element) {
                         redis.end();
                         console.log("===================");
-                        console.log("Finished, not data and meta file could be deleted");
+                        console.log("Finished, now data and meta file could be deleted and backpack server restarted");
                         return;
                     }
 
