@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 (function() {
     if (process.argv.length < 5) {
-        console.log("Usage: backpack-add <path> <redis host> <redis port>");
+        console.log("Usage: backpack-list <path> <redis host> <redis port>");
         return;
     }
 
     var args        = process.argv,
         redis       = require("redis").createClient(args[4], args[3], { return_buffers: true }),
-        FileManager = require("../index").FileManager;
+        FileManager = require("../index").FileManager,
         manager     = new FileManager(args[2], redis);
 
     manager.getFiles(function(error, files) {
