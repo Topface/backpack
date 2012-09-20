@@ -97,6 +97,8 @@ This is what you'll get:
 
 * `./bin/backpack-list` - List data files with their sizes and read-only flags.
 
+* `./bin/backpack-get-file-info` - Get data file number, offset and length by file name.
+
 ## Authors
 
 * [Ian Babrou](https://github.com/bobrik)

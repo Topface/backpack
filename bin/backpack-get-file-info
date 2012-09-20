@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 6) {
+        console.log("Usage: backpack-get-file-info <path> <upload path> <redis host> <redis port>");
+        return;
+    }
+
+    var args        = process.argv,
+        redis       = require("redis").createClient(args[4], args[5], { return_buffers: true }),
+        FileManager = require("../index").FileManager,
+        manager     = new FileManager(args[2], redis);
+
+    manager.nodeKeySerializer(args[3], function(error, key) {
+        if (error) {
+            console.log(error);
+            redis.end();
+        }
+
+        redis.get(key, function(error, value) {
+            if (error) {
+                console.log(error);
+                redis.end();
+            }
+
+            if (!value) {
+                console.log("Raw value:", value);
+                redis.end();
+                return;
+            }
+
+            manager.nodeInfoUnserializer(value, function(error, value) {
+                if (error) {
+                    console.log(error);
+                    redis.end();
+                }
+
+                console.log("Value:", value);
+                redis.end();
+            })
+        });
+    });
+})();
