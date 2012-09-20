@@ -99,6 +99,8 @@ This is what you'll get:
 
 * `./bin/backpack-get-file-info` - Get data file number, offset and length by file name.
 
+* `./bin/backpack-restore-from-log` - Restore redis index from data file log.
+
 ## Authors
 
 * [Ian Babrou](https://github.com/bobrik)

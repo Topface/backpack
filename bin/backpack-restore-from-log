@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+(function() {
+    if (process.argv.length < 6) {
+        console.log("Usage: backpack-list <path> <data file id> <redis host> <redis port>");
+        return;
+    }
+
+    var args        = process.argv,
+        path        = require("path"),
+        redis       = require("redis").createClient(args[5], args[4], { return_buffers: true }),
+        FileManager = require("../index").FileManager,
+        manager     = new FileManager(args[2], redis);
+
+    function exit(error) {
+        console.log(error);
+        process.exit(1);
+    }
+
+    manager.getFile(args[3], function(error, file) {
+        if (error) {
+            return exit(error);
+        }
+
+        file.getMeta().getContents(function(error, contents) {
+            if (error) {
+                return exit(error);
+            }
+
+            (function processNext() {
+                var item = contents.pop();
+
+                if (!item) {
+                    redis.end();
+                    return;
+                }
+
+                manager.nodeKeySerializer(item[0], function(error, key) {
+                    if (error) {
+                        return exit(error);
+                    }
+
+                    redis.get(key, function(error, value) {
+                        if (error) {
+                            return exit(error);
+                        }
+
+                        if (value) {
+                            return processNext();
+                        }
+
+                        console.log("No record in redis for " + item[0] + ", restoring..");
+
+                        manager.nodeInfoSerializer(args[3], item[1], item[2], function(error, value) {
+                            if (error) {
+                                return exit(error);
+                            }
+
+                            redis.setnx(key, value, function(error) {
+                                if (error) {
+                                    return exit(error);
+                                }
+
+                                processNext();
+                            })
+                        });
+                    });
+                })
+            })();
+        });
+    });
+})();
