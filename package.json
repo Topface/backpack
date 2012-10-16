@@ -1,10 +1,11 @@
 {
   "name": "backpack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fast storage engine for millions of small files",
   "main": "index.js",
   "dependencies": {
-    "redis": "~0.7.2"
+    "redis": "~0.7.2",
+    "aligned-buffer": "~0.1.2"
   },
   "devDependencies": {},
   "bin": {
