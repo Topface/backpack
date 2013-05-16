@@ -16,6 +16,6 @@
         }
 
         console.log("Successfully registered file #" + id);
-        redis.end();
+        redis.quit();
     });
 })();
