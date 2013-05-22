@@ -29,11 +29,13 @@
         response.on("end", function() {
             var url = "http://" + args[2] + ":" + args[3] + "/" + args[5];
 
-            if (response.statusCode != 201) {
+            if ([200, 201, 204].indexOf(response.statusCode) == -1) {
                 console.log("Error uploading file: http code " + response.statusCode + " | " + url);
             } else {
                 console.log("File successfully uploaded: " + url);
             }
         });
+
+        response.resume();
     });
 })();
