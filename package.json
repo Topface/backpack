@@ -1,13 +1,16 @@
 {
   "name": "backpack",
-  "version": "0.2.2",
+  "version": "0.5.0",
   "description": "Fast storage engine for millions of small files",
   "main": "index.js",
   "dependencies": {
-    "redis": "~0.7.2",
+    "redis": "~0.7.3",
     "aligned-buffer": "~0.1.2"
   },
-  "devDependencies": {},
+    "devDependencies": {
+        "simple_redis": "~0.1.0",
+        "async": "~0.2.9"
+    },
   "bin": {
     "backpack": "./bin/backpack",
     "backpack-add": "./bin/backpack-add",
@@ -15,7 +18,7 @@
     "backpack-upload": "./bin/backpack-upload"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "rm -f test/*.tmp; rm -f test/data/*; for i in test/*.js; do node $i || exit 1; done; rm -f test/*.tmp; rm -f test/data/*;"
   },
   "repository": "",
   "author": "Ian Babrou <ibobrik@gmail.com>",

@@ -76,10 +76,12 @@ This is what you'll get:
 {
     "gets": {
         "count" : 142028, // count of GET requests
+        "bytes" : 11128035828, // total size of responses in bytes
         "avg"   : 10.513109137048584 // average response time in ms for latest 1000 GET requests
     },
     "puts":{
         "count" : 1360, // count of PUT requests
+        "bytes" : 110637360, // size of written data in bytes
         "avg"   : 16.855013758303212 // average response time in ms for latest 1000 PUT requests
     }
 }
@@ -92,8 +94,6 @@ This is what you'll get:
 * `./bin/backpack-upload` - Upload file to storage.
 
 * `./bin/backpack-dump-log` - Dump files with lengths and offsets of specified storage file.
-
-* `./bin/backpack-clear` - Clear storage file to free up some space.
 
 * `./bin/backpack-list` - List data files with their sizes and read-only flags.
 

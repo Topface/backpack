@@ -5,11 +5,19 @@
         return;
     }
 
-    var args     = process.argv,
-        redis    = require("redis").createClient(args[6], args[5], { return_buffers: true }),
-        Server   = require("../index").Server,
-        backpack = new Server(args[2], redis);
+    var args        = process.argv,
+        redis       = require("redis").createClient(args[6], args[5], { return_buffers: true }),
+        FileManager = require("../index").FileManager,
+        Server      = require("../index").Server,
+        manager     = new FileManager(args[2], redis);
+        backpack    = new Server(manager);
 
-    backpack.listen(args[4], args[3]);
-    console.log("listening at " + args[3] + ":" + args[4]);
+    manager.load(function(error) {
+        if (error) {
+            throw error;
+        }
+
+        backpack.listen(args[4], args[3]);
+        console.log("listening at " + args[3] + ":" + args[4]);;
+    });
 })();
