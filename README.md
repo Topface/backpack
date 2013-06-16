@@ -2,7 +2,7 @@
 
 Ultimately fast storage for billions of files with http interface.
 This is not database, this is append-only mostly-reads storage.
-This is good photo storage if you want to build your facebook.
+This is good photo storage if you want to build your facebook, imgur or tumblr.
 
 ## How it works
 
@@ -20,10 +20,14 @@ You also get much better space utilisation for free, because there's no need to 
 useless metadata. Note that backpack does not overwrite files, it's not replacement
 for file system. Store only data that won't change if you don't want to waste disk space.
 
+Backpack also have metadata for every data file so you can restore your data if
+redis failed and lost some parts of data. However, disks fail so we recommend
+you to save every piece of you data on different machines or even in different data centers.
+
 ## Production usage
 
 We use it in [Topface](http://topface.com/) as photo storage for more than 100 million photos.
-Backpack instances coordinated by [coordinators](https://github.com/Topface/backpack-coordinator)
+Backpack instances managed by [coordinators](https://github.com/Topface/backpack-coordinator)
 and organized into shards to provide high availability and better performance.
 
 ## Dependencies
@@ -32,7 +36,7 @@ and organized into shards to provide high availability and better performance.
 
 ## Running server
 
-1. Install and run launch server. Let's assume that it's bound to `127.0.0.1:6379`
+1. Install and run redis server. Let's assume that it's bound to `127.0.0.1:6379`
 
 2. Decide where you want to save your files. Let's assume that you want to store files in `/var/backpack`.
 
@@ -66,29 +70,29 @@ wget http://127.0.0.1:8080/my/hosts
 
 Api is very straightforward:
 
-* PUT request to save file at specified url (query string is taken into accout)
+* PUT request to save file at specified url (query string is taken into account).
 
-* GET request to retrieve file.
+* GET request to retrieve saved file.
 
-* GET /stats to get some stats.
+* GET /stats to get some stats about what is happening.
 
 ## Stats
 
 You may ask backpack for stats by hitting `/stats` url.
 
-This is what you'll get:
+This is what you'll get (real example from production server at Topface):
 
 ```javascript
 {
     "gets": {
-        "count" : 142028, // count of GET requests
-        "bytes" : 11128035828, // total size of responses in bytes
-        "avg"   : 10.513109137048584 // average response time in ms for latest 1000 GET requests
+        "count" : 273852, // count of GET requests
+        "bytes" : 66603359793, // total size of responses in bytes
+        "avg"   : 17.317889781518243 // average response time in ms for latest 1000 GET requests
     },
     "puts":{
-        "count" : 1360, // count of PUT requests
-        "bytes" : 110637360, // size of written data in bytes
-        "avg"   : 16.855013758303212 // average response time in ms for latest 1000 PUT requests
+        "count" : 5604, // count of PUT requests
+        "bytes" : 1616002993, // size of written data in bytes
+        "avg"   : 4.842664467849093 // average response time in ms for latest 1000 PUT requests
     }
 }
 ```
@@ -110,28 +114,3 @@ This is what you'll get:
 ## Authors
 
 * [Ian Babrou](https://github.com/bobrik)
-
-### License
-
-This software is licensed under the MIT License.
-
-Copyright Ian Babrou, 2012.
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to permit
-persons to whom the Software is furnished to do so, subject to the
-following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-USE OR OTHER DEALINGS IN THE SOFTWARE.
