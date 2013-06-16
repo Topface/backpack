@@ -20,6 +20,12 @@ You also get much better space utilisation for free, because there's no need to 
 useless metadata. Note that backpack does not overwrite files, it's not replacement
 for file system. Store only data that won't change if you don't want to waste disk space.
 
+## Production usage
+
+We use it in [Topface](http://topface.com/) as photo storage for more than 100 million photos.
+Backpack instances coordinated by [coordinators](https://github.com/Topface/backpack-coordinator)
+and organized into shards to provide high availability and better performance.
+
 ## Dependencies
 
 * [redis](htt://redis.io/) - redis to save meta information about stored files
