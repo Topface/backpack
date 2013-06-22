@@ -1,28 +1,28 @@
 # backpack
 
 Ultimately fast storage for billions of files with http interface.
-This is not database, this is append-only mostly-reads storage.
-This is good photo storage if you want to build your facebook, imgur or tumblr.
+This is not a database, this is an append-only mostly-reads storage.
+This is a good photo storage if you want to build your own facebook, imgur or tumblr.
 
 ## How it works
 
-This project is inspired by Haystack from Facebook that is not currently open-source project.
+This project is inspired by Haystack from Facebook that is not currently an open-source project.
 You may read whitepaper about their implementation and some history in this document:
 [Finding a needle in Haystack: Facebook’s photo storage](http://static.usenix.org/event/osdi10/tech/full_papers/Beaver.pdf)
 
 When you need to save billions of small files on fs and access them fast, you will need
-to make many seeks on physical disk do get files. If you don't care about permissions
+to make many seeks on physical disk to get files. If you don't care about permissions
 for files and other metadata you'll have a huge overhead.
 
-Backpack store all metadata in memory and only need one read per file. It groups small
-files into big ones and always keep them open to return data much faster than usual fs.
+Backpack stores all metadata in memory and only need one read per file. It groups small
+files into big ones and always keeps them open to return data much faster than usual fs.
 You also get much better space utilisation for free, because there's no need to store
-useless metadata. Note that backpack does not overwrite files, it's not replacement
+useless metadata. Note that backpack does not overwrite files, it's not a replacement
 for file system. Store only data that won't change if you don't want to waste disk space.
 
 Backpack also have metadata for every data file so you can restore your data if
-redis failed and lost some parts of data. However, disks fail so we recommend
-you to save every piece of you data on different machines or even in different data centers.
+redis failed and lost some parts of data. However, disks can fail so we recommend
+to save every piece of you data on different machines or even in different data centers.
 
 ## Production usage
 
