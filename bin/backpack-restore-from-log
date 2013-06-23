@@ -11,11 +11,6 @@
         FileManager = require("../index").FileManager,
         manager     = new FileManager(args[2], redis);
 
-    function exit(error) {
-        console.log(error);
-        process.exit(1);
-    }
-
     manager.load(function(error) {
         if (error) {
             throw error;
@@ -23,46 +18,53 @@
 
         manager.getFile(args[3], function(error, file) {
             if (error) {
-                return exit(error);
+                throw error;
             }
 
-            file.getMeta().getContents(function(error, contents) {
+            file.meta.getContents(function(error, contents) {
                 if (error) {
-                    return exit(error);
+                    throw error;
                 }
 
                 (function processNext() {
                     var item = contents.pop();
 
                     if (!item) {
-                        redis.end();
+                        redis.quit();
                         return;
                     }
 
-                    manager.nodeKeySerializer(item[0], function(error, key) {
+                    manager.keySerializer(item[0], function(error, key) {
                         if (error) {
-                            return exit(error);
+                            console.log("error for " + item.join(" "));
+                            console.log(error);
+                            processNext();
+                            return;
                         }
 
                         redis.get(key, function(error, value) {
                             if (error) {
-                                return exit(error);
+                                throw error;
                             }
 
                             if (value) {
-                                return processNext();
+                                processNext();
+                                return;
                             }
 
                             console.log("No record in redis for " + item[0] + ", restoring..");
 
-                            manager.nodeInfoSerializer(args[3], item[1], item[2], function(error, value) {
+                            manager.valueSerializer(args[3], item[1], item[2], function(error, value) {
                                 if (error) {
-                                    return exit(error);
+                                    console.log("error for " + item.join(" "));
+                                    console.log(error);
+                                    processNext();
+                                    return;
                                 }
 
                                 redis.setnx(key, value, function(error) {
                                     if (error) {
-                                        return exit(error);
+                                        throw error;
                                     }
 
                                     processNext();
