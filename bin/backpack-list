@@ -10,16 +10,25 @@
         FileManager = require("../index").FileManager,
         manager     = new FileManager(args[2], redis);
 
-    manager.getFiles(function(error, files) {
+    manager.load(function(error) {
         if (error) {
             throw error;
         }
 
-        Object.keys(files).sort().forEach(function(id) {
-            // output format:
-            // file_id file_size read_only_flag
-            console.log(id, files[id].file.getSize(), files[id].info.readOnly ? 1 : 0);
+        manager.getFiles(function(error, files) {
+            if (error) {
+                throw error;
+            }
+
+            Object.keys(files).sort(function(left, right) {
+                return left - right;
+            }).forEach(function(id) {
+                // output format:
+                // file_id file_size read_only_flag
+                console.log(id, files[id].file.offset, files[id].info.readOnly ? 1 : 0);
+            });
+
+            redis.quit();
         });
-        redis.end();
     });
 })();

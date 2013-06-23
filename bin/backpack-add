@@ -10,12 +10,18 @@
         FileManager = require("../index").FileManager;
         manager     = new FileManager(args[2], redis);
 
-    manager.addStorageFile(function(error, id) {
+    manager.load(function(error) {
         if (error) {
-            console.log(error);
+            throw error;
         }
 
-        console.log("Successfully registered file #" + id);
-        redis.quit();
+        manager.addStorageFile(function(error, id) {
+            if (error) {
+                console.log(error);
+            }
+
+            console.log("Successfully registered file #" + id);
+            redis.quit();
+        });
     });
 })();

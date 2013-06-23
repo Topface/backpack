@@ -16,56 +16,62 @@
         process.exit(1);
     }
 
-    manager.getFile(args[3], function(error, file) {
+    manager.load(function(error) {
         if (error) {
-            return exit(error);
+            throw error;
         }
 
-        file.getMeta().getContents(function(error, contents) {
+        manager.getFile(args[3], function(error, file) {
             if (error) {
                 return exit(error);
             }
 
-            (function processNext() {
-                var item = contents.pop();
-
-                if (!item) {
-                    redis.end();
-                    return;
+            file.getMeta().getContents(function(error, contents) {
+                if (error) {
+                    return exit(error);
                 }
 
-                manager.nodeKeySerializer(item[0], function(error, key) {
-                    if (error) {
-                        return exit(error);
+                (function processNext() {
+                    var item = contents.pop();
+
+                    if (!item) {
+                        redis.end();
+                        return;
                     }
 
-                    redis.get(key, function(error, value) {
+                    manager.nodeKeySerializer(item[0], function(error, key) {
                         if (error) {
                             return exit(error);
                         }
 
-                        if (value) {
-                            return processNext();
-                        }
-
-                        console.log("No record in redis for " + item[0] + ", restoring..");
-
-                        manager.nodeInfoSerializer(args[3], item[1], item[2], function(error, value) {
+                        redis.get(key, function(error, value) {
                             if (error) {
                                 return exit(error);
                             }
 
-                            redis.setnx(key, value, function(error) {
+                            if (value) {
+                                return processNext();
+                            }
+
+                            console.log("No record in redis for " + item[0] + ", restoring..");
+
+                            manager.nodeInfoSerializer(args[3], item[1], item[2], function(error, value) {
                                 if (error) {
                                     return exit(error);
                                 }
 
-                                processNext();
-                            })
+                                redis.setnx(key, value, function(error) {
+                                    if (error) {
+                                        return exit(error);
+                                    }
+
+                                    processNext();
+                                })
+                            });
                         });
-                    });
-                })
-            })();
+                    })
+                })();
+            });
         });
     });
 })();

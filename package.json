@@ -1,6 +1,6 @@
 {
   "name": "backpack",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Fast storage engine for millions of small files",
   "main": "index.js",
   "dependencies": {
