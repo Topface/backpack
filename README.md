@@ -30,6 +30,58 @@ We use it in [Topface](http://topface.com/) as photo storage for more than 100 m
 Backpack instances managed by [coordinators](https://github.com/Topface/backpack-coordinator)
 and organized into shards to provide high availability and better performance.
 
+## Benchmarks
+
+Let's take 1 750 000 real photos from Topface and compare backpack and nginx. We'll use
+two identical servers with 1Tb SATA disks (WDC WD1003FBYX-01Y7B1). Nginx is high-performance
+web server so it should be fair competition. We'll save files in nginx with scheme
+`xx/yy/u123_abc.jpg` to keep directory size relatively small.
+
+### Writing
+
+Backpack: 175 240 megabytes on disk, 1h41m to write.
+
+Nginx: 177 483 megabytes on disk, 2h13m to write.
+
+Result: 23% faster, just a bit smaller size on disk. But that's not the case, actually.
+
+### Reading
+
+In real world you cannot read files sequentially. People do random things on internet and
+request random files. We cannot put files in order people will read them, so we'll just
+pick 100 000 random files to read (same for nginx and backpack). To be fair, we'll drop
+all page cache on linux with `echo 3 > /proc/sys/vm/drop_caches`.
+
+It's better to see on graphs how it looks like (backpack is red, nginx is green).
+
+* Requests per second.
+
+![requests per second](http://i.imgur.com/1R0Kvld.png)
+
+Backpack finished after 792 seconds, nginx after 1200 seconds. 33% faster!
+Here you may see that nginx is getting faster but it has it's limits.
+
+* Reads per second (from `iostat -x -d 10`).
+
+![reads per second](http://i.imgur.com/kKUzCWy.png)
+
+Here you may see the reason why nginx is slower: there are too many seeks.
+Nginx needs to open directories and fetch file metadata that isn't in cache.
+Note that you can't cache everything you need if you store more data
+that in this test. Real servers hold way more data.
+
+Backpack only read the data and does not seek too much.
+
+* Disk io utilization (from `iostat -x -d 10`).
+
+Both disks are used by 100% while reads are active.
+
+![disk io utilization](http://i.imgur.com/aePjesO.png)
+
+Now imagine that you have not 1 750 000 files, but 22 000 000 files on single server.
+Extra seek for no reason will choke your system under load. That is the main reason
+why we came up with backpack.
+
 ## Dependencies
 
 * [redis](htt://redis.io/) - redis to save meta information about stored files
