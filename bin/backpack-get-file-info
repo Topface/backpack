@@ -12,30 +12,27 @@
 
     manager.nodeKeySerializer(args[3], function(error, key) {
         if (error) {
-            console.log(error);
-            redis.end();
+            throw error;
         }
 
         redis.get(key, function(error, value) {
             if (error) {
-                console.log(error);
-                redis.end();
+                throw error;
             }
 
             if (!value) {
                 console.log("Raw value:", value);
-                redis.end();
+                redis.quit();
                 return;
             }
 
             manager.nodeInfoUnserializer(value, function(error, value) {
                 if (error) {
-                    console.log(error);
-                    redis.end();
+                    throw error;
                 }
 
                 console.log("Value:", value);
-                redis.end();
+                redis.quit();
             })
         });
     });

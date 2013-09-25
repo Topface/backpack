@@ -12,7 +12,7 @@
 
     log.getContents(function(error, contents) {
         if (error) {
-            console.log(error);
+            throw error;
         }
 
         contents.forEach(function(file) {

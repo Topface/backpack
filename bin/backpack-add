@@ -17,7 +17,7 @@
 
         manager.addStorageFile(function(error, id) {
             if (error) {
-                console.log(error);
+                throw error;
             }
 
             console.log("Successfully registered file #" + id);
